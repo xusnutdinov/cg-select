@@ -1,7 +1,5 @@
 /node_modules
-/build/js/lib.js
-/build/js/lib.min.js
-/build/index.html
+/build
 /src/fonts
 /src/img
 /src/svg
