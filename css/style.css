@@ -1,0 +1,83 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.app {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 1rem;
+}
+
+.cg-select {
+    max-width: 300px;
+    width: 100%;
+    /* border: 1px solid #000; */
+    position: relative;
+}
+
+.cg-select-top {
+    background-color: cornflowerblue;
+    border-radius: 5px;
+    color: #fff;
+    padding: 10px 20px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cg-select-top.active .cg-select-top__icon {
+    transform: rotate(180deg);
+}
+.cg-select-top.active + .cg-select-body {
+    display: block;
+}
+
+.cg-select-top__icon {
+    font-size: 0;
+    line-height: 0;
+    color: transparent;
+    transition: transform 0.3s;
+    /* position: absolute; */
+    /* top: 50%; */
+    /* transform: translateY(-50%); */
+    /* right: 20px; */
+    width: 30px;
+    height: 30px;
+    /* content: ""; */
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='icon/navigation/expand_more_24px'%3E%3Cpath id='icon/navigation/expand_more_24px_2' d='M16.59 8.29498L12 12.875L7.41 8.29498L6 9.70498L12 15.705L18 9.70498L16.59 8.29498Z' fill='white' fill-opacity='1'/%3E%3C/g%3E%3C/svg%3E%0A");
+}
+
+.cg-select-body {
+    background-color: rgb(233, 233, 233);
+    border-radius: 5px;
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    transition: opacity 0.3s, visibility 0.3s;
+    max-width: 100%;
+    display: none;
+}
+
+.cg-select-body__list {
+    list-style: none;
+}
+
+.cg-select-body__item {
+    color: rgb(36, 36, 36);
+    padding: 8px 20px;
+    cursor: pointer;
+}
+.cg-select-body__item.active {
+    background-color: rgb(175, 175, 175);
+}
+.cg-select-body__item:hover {
+    background-color: rgb(107, 107, 107);
+}
