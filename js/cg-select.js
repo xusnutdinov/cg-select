@@ -1,53 +1,4 @@
-// const selectID = "cg-select";
-// const selectFromID = document.querySelector("#" + selectID);
-// selectFromID.style.display = "none";
-
-// if (selectFromID) {
-//     selectFromID.addEventListener("click", (e) => {
-//         e.stopPropagation();
-//     });
-
-//     const selectOptions = {};
-//     const selectHTMLOptions = selectFromID.querySelectorAll("option");
-//     const selectContainer = document.createElement("div");
-//     selectContainer.classList.add("cg-select");
-
-//     const selectTop = document.createElement("div");
-//     selectTop.classList.add("cg-select-top");
-//     selectTop.addEventListener("click", (e) => {
-//         e.currentTarget.classList.toggle("active");
-//     });
-//     selectTop.innerHTML = "<span>Select the item</span>";
-
-//     const selectBody = document.createElement("div");
-//     selectBody.classList.add("cg-select-body");
-
-//     selectHTMLOptions.forEach((option) => {
-//         // selectOptions[option.value] = option.innerText;
-//         let selectBodyElement = document.createElement("div");
-//         selectBodyElement.classList.add("cg-select-body__item");
-//         selectBodyElement.dataset.dataSelectValue = option.value;
-//         selectBodyElement.innerText = option.innerText;
-//         selectBodyElement.addEventListener("click", (e) => {
-//             selectTop.querySelector("span").innerText = e.currentTarget.innerText;
-//             selectTop.classList.remove("active");
-//         });
-//         selectBody.appendChild(selectBodyElement);
-//     });
-
-//     selectContainer.appendChild(selectTop);
-//     selectContainer.appendChild(selectBody);
-
-//     let selectParent = selectFromID.parentNode;
-
-//     selectParent.insertBefore(selectContainer, selectFromID);
-//     document.body.addEventListener("click", (e) => {
-//         if (selectTop.classList.contains("active")) {
-//             selectTop.classList.remove("active");
-//         }
-//     });
-// }
-
+// Template for Top part of Select
 const selectTopTemplate = (placeholder = "Выберете элемент") => {
     return `
     <div class="cg-select-top">
@@ -57,11 +8,18 @@ const selectTopTemplate = (placeholder = "Выберете элемент") => {
     `;
 };
 
-const selectBodyTemplate = (data = {}) => {
+// Template for dropdown part of Select
+const selectBodyTemplate = (data = {}, selectedKey) => {
     let items = [];
     if (data != {}) {
         for (let key in data) {
-            items.push(`<li class="cg-select-body__item" data-select-value="${key}">${data[key.toString()]}</li>`);
+            let cls = "";
+            if (selectedKey === key.toString()) {
+                cls = "selected";
+            }
+            items.push(
+                `<li class="cg-select-body__item ${cls}" data-select-value="${key}">${data[key.toString()]}</li>`
+            );
         }
         items = items.join("");
     }
@@ -74,17 +32,17 @@ const selectBodyTemplate = (data = {}) => {
     `;
 };
 
-const selectTemplate = (data) => {
+// Template for whole Select
+const selectTemplate = (data, selectedKey) => {
     return `
         ${selectTopTemplate()}
-        ${selectBodyTemplate(data)}
+        ${selectBodyTemplate(data, selectedKey)}
     `;
 };
 
 class Select {
     constructor(selector = "#select", options = {}) {
         this.$select = document.querySelector(selector);
-        // this.options = options;
         this.$newSelect = "";
         this.$newSelectTop = "";
         this.data = {};
@@ -93,18 +51,21 @@ class Select {
         this.selectedKey = "";
     }
 
+    // Render markup of new Select in HTML
     #render() {
         const $selectParent = this.$select.parentNode;
+
         this.$newSelect = document.createElement("div");
         this.$newSelect.classList.add("cg-select");
 
         this.getData();
-        this.$newSelect.innerHTML = selectTemplate(this.data);
+        this.$newSelect.innerHTML = selectTemplate(this.data, this.selectedKey);
         $selectParent.insertBefore(this.$newSelect, this.$select);
         this.$select.style.display = "none";
         this.$newSelectTop = document.querySelector(".cg-select-top");
     }
 
+    // EventListener of clicks
     #clickHandler() {
         this.$newSelect.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -121,14 +82,22 @@ class Select {
         this.$newSelect.querySelectorAll(".cg-select-body__item").forEach((item) => {
             item.addEventListener("click", (e) => {
                 this.close();
+
                 this.$newSelectTop.querySelector("span").innerText = e.currentTarget.innerText;
                 this.selectedKey = e.currentTarget.dataset.selectValue;
-                console.log(`[value="${this.selectedKey}"]`);
+                this.$select.querySelectorAll("option").forEach((el) => {
+                    el.setAttribute("selected", "");
+                });
                 this.$select.querySelector(`[value="${this.selectedKey}"]`).setAttribute("selected", "selected");
+                this.$newSelect.querySelectorAll(".cg-select-body__item").forEach((el) => {
+                    el.classList.remove("selected");
+                });
+                this.$newSelect.querySelector(`[data-select-value="${this.selectedKey}"]`).classList.add("selected");
             });
         });
     }
 
+    // toggle the active class for select
     toggle() {
         if (this.$newSelectTop.classList.contains("active")) {
             this.close();
@@ -137,14 +106,17 @@ class Select {
         }
     }
 
+    // Open Select
     open() {
         this.$newSelectTop.classList.add("active");
     }
 
+    // Close Select
     close() {
         this.$newSelectTop.classList.remove("active");
     }
 
+    // get Data from options of original select
     getData() {
         this.data = {};
         this.$select.querySelectorAll("option").forEach((el) => {
